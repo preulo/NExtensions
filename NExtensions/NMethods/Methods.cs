@@ -112,6 +112,48 @@ namespace NExtensions.NMethods
         }
 
         /// <summary>
+        /// Checks whether a value can be considered to be inside a range defined by two values.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="value">Value to check.</param>
+        /// <param name="from">First of the two limits of the range.</param>
+        /// <param name="to">Second of the two limits of the range.</param>
+        /// <param name="inclusive">true if value should be considered inside the range if it is equal to one of the limits; false is value should be considered not inside the range if it is equal to one of the limits.</param>
+        /// <returns>true if value is inside the range defined by from and to; otherwise, false.</returns>
+        public static bool Between<T>(this T value, T from, T to, bool inclusive = true) where T : IComparable
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
+            }
+
+            int compareArguments = from.CompareTo(to);
+
+            bool expectedOrder = compareArguments < 0;
+
+            T lower = expectedOrder ? from : to;
+            T upper = expectedOrder ? to : from;
+
+            int compareResultFrom = value.CompareTo(lower);
+            int compareResultTo   = value.CompareTo(upper);
+
+            bool passesFrom = inclusive ? compareResultFrom >= 0 : compareResultFrom > 0;
+            bool passesTo   = inclusive ? compareResultTo   <= 0 : compareResultTo   < 0;
+
+            return passesFrom && passesTo;
+        }
+
+        /// <summary>
         /// Enqueues an item on a queue if it is not already enqueued.
         /// </summary>
         /// <typeparam name="T">Type of the queue's items.</typeparam>
